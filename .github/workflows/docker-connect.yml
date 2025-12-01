@@ -1,0 +1,31 @@
+name: docker-connect
+
+on:
+  workflow_dispatch:
+
+jobs:
+  docker-connect:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout GitHub repo
+      uses: actions/checkout@v4
+    - name: Set up Java
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: 11
+    - name: Start container (using port mapping)
+      run: |
+        docker run -d --cap-add=SYS_ADMIN -p 4444:4444 selenoid/vnc:chrome_118.0
+    - name: Wait for container
+      run: |
+        ./scripts/wait-for-it.sh --timeout=60 localhost:4444
+    - name: Get status
+      run: |
+        wget -O - http://localhost:4444/status
+    - name: Create session
+      run: |
+        curl -X POST http://localhost:4444/session -d '{"desiredCapabilities":{"browserName":"chrome"}}'
+    - name: Run Selenium test
+      run: |
+        mvn -B test -Dtest=RemoteChromeTest
