@@ -46,6 +46,14 @@ class ChromeBasicTest {
         String title = driver.getTitle();
         assertThat(title).contains("Selenium WebDriver");
     }
+    
+    @Test
+    void test2() {
+        driver.get("https://bonigarcia.dev/selenium-webdriver-java/");
+        String title = driver.getTitle();
+        assertThat(title).contains("Selenium WebDriver");
+    }
+
 
     @AfterEach
     void teardown() {
